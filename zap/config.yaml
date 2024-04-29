@@ -1,0 +1,10 @@
+zap:
+  level: info
+  prefix: '[github.com/flipped-aurora/gin-vue-admin/server]'
+  format: console
+  director: ./logs
+  encode-level: LowercaseColorLevelEncoder
+  stacktrace-key: stacktrace
+  max-age: 0
+  show-line: true
+  log-in-console: true

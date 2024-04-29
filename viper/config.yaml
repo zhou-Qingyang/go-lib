@@ -1,0 +1,13 @@
+Mysql:
+  user: qiangzhou1
+  password: 123456
+  database: hrm
+
+Redis:
+  ip: 123.23.23.23
+  userName: admin
+  port: 233
+
+AppConfig:
+  appName: hrmdad
+  logLevel: info

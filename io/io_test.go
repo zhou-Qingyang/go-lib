@@ -10,7 +10,6 @@ import (
 func TestX1(t *testing.T) {
 	// strings.NewReader  bytes.Reader
 	//ReaderAt
-
 	// data := make([]byte, 20)
 	// reader := strings.NewReader("Go语言学习之路")
 	// reader.ReadAt(data, 2)
@@ -19,6 +18,7 @@ func TestX1(t *testing.T) {
 	byteCount := utf8.RuneLen(chineseChar)
 	fmt.Printf("%v 占据的字节数为：%d\n", chineseChar, byteCount)
 	file, err := os.Create("writeAt.txt")
+	// os.Open("writeAt.txt")
 	if err != nil {
 		panic(err)
 	}

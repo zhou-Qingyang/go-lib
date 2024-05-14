@@ -3,9 +3,10 @@ package viper
 import (
 	"bytes"
 	"fmt"
-	"github.com/spf13/viper"
 	"testing"
 	"time"
+
+	"github.com/spf13/viper"
 )
 
 func TestViper(t *testing.T) {
@@ -53,7 +54,7 @@ func TestViper(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(c)
+	fmt.Printf("config message:%+v \n", c)
 
 	//3. 监听文件配置
 	viper.SetConfigName("config")

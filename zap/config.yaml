@@ -7,4 +7,4 @@ zap:
   stacktrace-key: stacktrace
   max-age: 0
   show-line: true
-  log-in-console: true
+  log-in-console: false

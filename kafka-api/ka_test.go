@@ -44,41 +44,6 @@ func TestXxx(t *testing.T) {
 	}
 }
 
-func TestConsumer(t *testing.T) {
-	// 指定要连接的topic和partition
-	topic := "my-topic1"
-	partition := 0
-	// 连接至Kafka的leader节点
-	conn, err := kafka.DialLeader(context.Background(), "tcp", "175.178.2.100:9092", topic, partition)
-	if err != nil {
-		log.Fatal("failed to dial leader:", err)
-	}
-
-	// 设置读取超时时间
-	conn.SetReadDeadline(time.Now().Add(10 * time.Second))
-	// 读取一批消息，得到的batch是一系列消息的迭代器
-	batch := conn.ReadBatch(10e3, 1e6) // fetch 10KB min, 1MB max
-	// 遍历读取消息
-	b := make([]byte, 10e3) // 10KB max per message
-	for {
-		n, err := batch.Read(b)
-		if err != nil {
-			break
-		}
-		fmt.Println(string(b[:n]))
-	}
-
-	// 关闭batch
-	if err := batch.Close(); err != nil {
-		log.Fatal("failed to close batch:", err)
-	}
-
-	// 关闭连接
-	if err := conn.Close(); err != nil {
-		log.Fatal("failed to close connection:", err)
-	}
-}
-
 func TestCreateTopic(t *testing.T) {
 	// 指定要创建的topic名称
 	topic := "my-topic2"
@@ -141,12 +106,13 @@ func TestGetTopicList(t *testing.T) {
 func TestReader(t *testing.T) {
 	// 创建Reader
 	r := kafka.NewReader(kafka.ReaderConfig{
-		Brokers:   []string{"175.178.2.100:9092"},
-		Topic:     "my-topic",
-		Partition: 0,
-		MaxBytes:  10e6, // 10MB
+		Brokers:        []string{"223.82.117.13:9092"},
+		Topic:          "VisionQrCodeRecord12",
+		Partition:      0,
+		MaxBytes:       10e6, // 10MB
+		CommitInterval: time.Second,
 	})
-	r.SetOffset(3) // 设置Offset
+	r.SetOffset(0) // 设置Offset
 	// 接收消息
 	defer func() {
 		// 程序退出前关闭Reader
@@ -165,6 +131,38 @@ func TestReader(t *testing.T) {
 				break
 			}
 			fmt.Printf("message at offset %d: %s = %s\n", m.Offset, string(m.Key), string(m.Value))
+		}
+	}
+}
+func TestReader2(t *testing.T) {
+	// 创建Reader
+	r := kafka.NewReader(kafka.ReaderConfig{
+		Brokers:   []string{"223.82.117.13:9092"},
+		Topic:     "VisionQrCodeRecord12",
+		Partition: 0,
+		GroupID:   "your-consumer-group-id1", // 设置消费者组ID
+		MaxBytes:  10e6,                      // 10MB
+	})
+	r.SetOffset(0) // 设置Offset
+	// 接收消息
+	defer func() {
+		// 程序退出前关闭Reader
+		if err := r.Close(); err != nil {
+			log.Fatal("failed to close reader:", err)
+		}
+	}()
+	ctx := context.Background()
+	for {
+		// 获取消息
+		m, err := r.FetchMessage(ctx)
+		if err != nil {
+			break
+		}
+		// 处理消息
+		fmt.Printf("message at topic/partition/offset %v/%v/%v: %s = %s\n", m.Topic, m.Partition, m.Offset, string(m.Key), string(m.Value))
+		// 显式提交
+		if err := r.CommitMessages(ctx, m); err != nil {
+			log.Fatal("failed to commit messages:", err)
 		}
 	}
 }

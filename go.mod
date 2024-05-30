@@ -1,6 +1,8 @@
 module libray_func
 
-go 1.20
+go 1.21
+
+toolchain go1.21.6
 
 require (
 	github.com/casbin/casbin/v2 v2.82.0
